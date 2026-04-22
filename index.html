@@ -18,10 +18,10 @@
 
     <div id="setupUser" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-6 backdrop-blur-md">
         <div class="bg-white p-8 rounded-[2rem] w-full max-w-sm shadow-2xl border border-white text-center">
-            <h2 class="text-2xl font-black mb-2 uppercase tracking-tight">Welcome!</h2>
-            <p class="text-sm text-slate-500 mb-6 font-medium">กรุณาตั้งชื่อเล่นเพื่อแยกข้อมูลเครื่องของคุณ</p>
+            <h2 class="text-2xl font-black mb-2 uppercase tracking-tight">Login</h2>
+            <p class="text-sm text-slate-500 mb-6 font-medium">กรุณาตั้งชื่อเล่นเพื่อเข้าถึงข้อมูลของคุณ</p>
             <input type="text" id="usernameInput" placeholder="ชื่อเล่นของคุณ" class="w-full p-4 bg-slate-100 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-center border-none">
-            <button onclick="saveUsername()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all">เริ่มใช้งาน</button>
+            <button onclick="saveUsername()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-200">เข้าสู่ระบบ</button>
         </div>
     </div>
 
@@ -70,11 +70,11 @@
                     <input type="number" id="weight" step="0.1" placeholder="0.0" class="w-full p-4 bg-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-2xl font-black border-none">
                 </div>
             </div>
-            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกน้ำหนักวันนี้</button>
+            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกน้ำหนัก</button>
         </div>
 
         <div class="glass-card rounded-[2rem] shadow-sm p-6 border border-white">
-            <h3 class="font-bold text-slate-700 text-[10px] uppercase tracking-widest mb-6">Weight Trend Line</h3>
+            <h3 class="font-bold text-slate-700 text-[10px] uppercase tracking-widest mb-6">Weight Trend</h3>
             <div class="h-64"><canvas id="weightChart"></canvas></div>
         </div>
     </div>
@@ -86,21 +86,37 @@
         let firstWeight = null;
 
         window.onload = () => {
-            if (!username) { document.getElementById('setupUser').classList.remove('hidden'); } 
-            else { initApp(); }
+            if (!username) {
+                document.getElementById('setupUser').classList.remove('hidden');
+            } else {
+                initApp();
+            }
         };
 
+        // แก้ไข: เมื่อบันทึกชื่อแล้ว ให้เริ่มโหลดข้อมูลทันทีโดยไม่ต้อง Refresh
         function saveUsername() {
             const name = document.getElementById('usernameInput').value.trim();
-            if (name) { localStorage.setItem('app_user', name); document.getElementById('setupUser').classList.add('hidden'); initApp(); }
+            if (name) {
+                username = name; // อัปเดตตัวแปรใน Memory ทันที
+                localStorage.setItem('app_user', name);
+                document.getElementById('setupUser').classList.add('hidden');
+                initApp(); // เรียกฟังก์ชันเริ่มต้นแอปทันที
+            }
         }
 
-        function resetUser() { if(confirm('ต้องการเปลี่ยนชื่อผู้ใช้และล้างข้อมูลในเครื่องนี้?')) { localStorage.clear(); location.reload(); } }
+        function resetUser() {
+            if(confirm('ต้องการเปลี่ยนชื่อผู้ใช้?')) {
+                localStorage.clear();
+                location.reload(); // ตัวนี้ต้อง Reload เพื่อเคลียร์สถานะทั้งหมด
+            }
+        }
 
         function initApp() {
             document.getElementById('displayUser').innerText = `User: ${username}`;
             document.getElementById('heightInput').value = localStorage.getItem('user_height') || 156;
-            loadData();
+            // ดึงเป้าหมายจากเครื่องก่อน ถ้ามี
+            if (weightGoal) document.getElementById('targetWeightText').innerText = weightGoal;
+            loadData(); // ดึงข้อมูลจาก Google Sheets ทันที
         }
 
         function setGoal() {
@@ -109,9 +125,8 @@
                 weightGoal = goal;
                 localStorage.setItem('user_weight_goal', goal);
                 document.getElementById('targetWeightText').innerText = goal;
-                // อัปเดต % ทันทีถ้ามีน้ำหนักเดิมอยู่แล้ว
-                const curW = parseFloat(document.getElementById('currentWeightText').innerText);
-                if (curW > 0) updateUI(curW, parseFloat(document.getElementById('heightInput').value));
+                // คำนวณเปอร์เซ็นต์ใหม่ทันทีไม่ต้องรอ
+                if (firstWeight) updateUI(parseFloat(document.getElementById('currentWeightText').innerText), parseFloat(document.getElementById('heightInput').value));
             }
         }
 
@@ -126,10 +141,10 @@
             const currentW = parseFloat(w);
             const currentH = parseFloat(h);
 
-            // 1. เปลี่ยนปุ่มทันที
-            btn.disabled = true; btn.innerHTML = '<span class="animate-pulse">กำลังซิงค์...</span>';
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">กำลังซิงค์...</span>';
 
-            // 2. อัปเดต UI และ กราฟ ทันทีแบบไม่ต้องรอ (Optimistic Update)
+            // Optimistic Update: อัปเดตกราฟและตัวเลขบนหน้าจอทันที (ไม่ต้องรอ Server)
             updateUI(currentW, currentH);
             if (window.myChart) {
                 const today = new Date().toLocaleDateString('th-TH', {day:'numeric', month:'short'});
@@ -139,9 +154,9 @@
             }
 
             try {
-                // 3. ส่งข้อมูลไป Google Sheets
                 await fetch(GAS_URL, {
-                    method: 'POST', mode: 'no-cors',
+                    method: 'POST',
+                    mode: 'no-cors',
                     body: JSON.stringify({ 
                         weight: currentW, 
                         height: currentH, 
@@ -150,22 +165,30 @@
                     })
                 });
                 document.getElementById('weight').value = '';
-                // 4. โหลดข้อมูลจริงอีกครั้งใน 3 วินาทีเพื่อความแม่นยำ
-                setTimeout(loadData, 3000);
-            } catch (err) { console.error('Save error:', err); }
-            finally { btn.disabled = false; btn.innerText = 'บันทึกน้ำหนักวันนี้'; }
+                // หน่วงเวลาเล็กน้อยเพื่อให้ Google Sheets ประมวลผลเสร็จแล้วค่อยดึงข้อมูลจริงมา Re-check
+                setTimeout(loadData, 2000);
+            } catch (err) { console.error(err); }
+            finally { 
+                btn.disabled = false; 
+                btn.innerText = 'บันทึกน้ำหนัก'; 
+            }
         }
 
         async function loadData() {
             try {
                 const res = await fetch(`${GAS_URL}?user=${encodeURIComponent(username)}`);
                 const data = await res.json();
-                if (!data || data.length === 0) return;
+                
+                // ถ้าสลับ User แล้วไม่มีข้อมูล ให้เคลียร์หน้าจอรอ
+                if (!data || data.length === 0) {
+                    resetUIDisplay();
+                    return;
+                }
 
                 const lastRow = data[data.length - 1];
                 
-                // ดึงเป้าหมายจาก Sheet ถ้าในเครื่องยังไม่มี
-                if (lastRow[5] && lastRow[5] != 0 && !weightGoal) {
+                // อัปเดตเป้าหมายจากฐานข้อมูล (Sync ระหว่างเครื่อง)
+                if (lastRow[5] && lastRow[5] != 0) {
                     weightGoal = lastRow[5];
                     localStorage.setItem('user_weight_goal', weightGoal);
                     document.getElementById('targetWeightText').innerText = weightGoal;
@@ -177,6 +200,20 @@
                 const labels = data.map(r => new Date(r[0]).toLocaleDateString('th-TH', {day:'numeric', month:'short'}));
                 renderChart(labels, data.map(r => r[1]));
             } catch (e) { console.error('Load error:', e); }
+        }
+
+        // ฟังก์ชันล้างหน้าจอเมื่อข้อมูลเป็นว่าง (สำหรับตอนสลับ User)
+        function resetUIDisplay() {
+            document.getElementById('currentWeightText').innerText = '0';
+            document.getElementById('percentText').innerText = '0%';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('analysisResult').classList.add('hidden');
+            document.getElementById('motivationalText').innerText = 'ยังไม่มีข้อมูลบันทึก';
+            if (window.myChart) {
+                window.myChart.data.labels = [];
+                window.myChart.data.datasets[0].data = [];
+                window.myChart.update();
+            }
         }
 
         function updateUI(w, h) {
@@ -200,12 +237,7 @@
                 
                 document.getElementById('progressBar').style.width = prog + '%';
                 document.getElementById('percentText').innerText = Math.round(prog) + '%';
-                
-                if (w <= weightGoal) {
-                    document.getElementById('motivationalText').innerText = "ถึงเป้าหมายแล้ว! สุดยอดมากครับ 🎉";
-                } else {
-                    document.getElementById('motivationalText').innerText = `ลดไปแล้ว ${Math.abs(lost).toFixed(1)} kg (อีก ${Math.abs(w - weightGoal).toFixed(1)} kg)`;
-                }
+                document.getElementById('motivationalText').innerText = w <= weightGoal ? "ถึงเป้าหมายแล้ว 🎉" : `ลดไปแล้ว ${Math.abs(lost).toFixed(1)} kg (อีก ${Math.abs(w - weightGoal).toFixed(1)} kg)`;
             }
         }
 
