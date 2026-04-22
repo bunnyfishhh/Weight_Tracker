@@ -17,11 +17,11 @@
 <body class="bg-slate-100 min-h-screen pb-10 text-slate-800">
 
     <div id="setupUser" class="hidden fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-6 backdrop-blur-md">
-        <div class="bg-white p-8 rounded-[2rem] w-full max-w-sm shadow-2xl border border-white text-center">
-            <h2 class="text-2xl font-black mb-2 uppercase tracking-tight">Login</h2>
-            <p class="text-sm text-slate-500 mb-6 font-medium">กรุณาตั้งชื่อเล่นเพื่อเข้าถึงข้อมูลของคุณ</p>
-            <input type="text" id="usernameInput" placeholder="ชื่อเล่นของคุณ" class="w-full p-4 bg-slate-100 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-center border-none">
-            <button onclick="saveUsername()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-200">เข้าสู่ระบบ</button>
+        <div class="bg-white p-8 rounded-[2rem] w-full max-w-sm shadow-2xl border border-white">
+            <h2 class="text-2xl font-bold mb-2">ยินดีต้อนรับ!</h2>
+            <p class="text-sm text-slate-500 mb-6">กรุณาตั้งชื่อเล่นเพื่อแยกข้อมูลเครื่องของคุณ</p>
+            <input type="text" id="usernameInput" placeholder="ชื่อเล่นของคุณ" class="w-full p-4 bg-slate-100 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-blue-500 font-bold text-lg text-center">
+            <button onclick="saveUsername()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg">เริ่มใช้งาน</button>
         </div>
     </div>
 
@@ -31,7 +31,7 @@
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 uppercase">Weight Tracker</h1>
                 <p id="displayUser" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]"></p>
             </div>
-            <button onclick="resetUser()" class="text-[10px] font-bold text-slate-400 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100 uppercase tracking-widest">เปลี่ยนผู้ใช้</button>
+            <button onclick="resetUser()" class="text-[10px] font-bold text-slate-400 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-100">เปลี่ยนผู้ใช้</button>
         </header>
 
         <div id="goalDisplay" class="glass-card p-6 rounded-[2rem] border border-white shadow-xl shadow-slate-200/50 mb-6">
@@ -51,30 +51,33 @@
             <p id="motivationalText" class="text-[11px] text-slate-500 mt-4 font-medium text-center italic"></p>
         </div>
 
-        <div id="analysisResult" class="hidden mb-6">
-            <div class="glass-card p-4 rounded-2xl border border-white shadow-sm text-center">
-                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">BMI STATUS</p>
+        <div id="analysisResult" class="hidden mb-6 text-center">
+            <div class="glass-card p-4 rounded-2xl border border-white shadow-sm">
+                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">BMI Status</p>
                 <p id="bmiValue" class="text-2xl font-black text-slate-800">-</p>
                 <p id="bmiStatusText" class="text-[10px] font-bold uppercase"></p>
             </div>
         </div>
 
-        <div class="glass-card rounded-[2rem] shadow-xl shadow-slate-200/50 p-6 mb-6 border border-white">
+        <div class="glass-card rounded-[2rem] shadow-xl p-6 mb-6 border border-white">
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">ส่วนสูง (cm)</label>
-                    <input type="number" id="heightInput" placeholder="0.0" class="w-full p-4 bg-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border-none">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1 font-bold">ส่วนสูง (cm)</label>
+                    <input type="number" id="heightInput" placeholder="156" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border-none">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">น้ำหนักปัจจุบัน (kg)</label>
-                    <input type="number" id="weight" step="0.1" placeholder="0.0" class="w-full p-4 bg-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-2xl font-black border-none">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1 font-bold">น้ำหนักปัจจุบัน (kg)</label>
+                    <input type="number" id="weight" step="0.1" placeholder="0.0" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-2xl font-black border-none">
                 </div>
             </div>
-            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกน้ำหนัก</button>
+            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกข้อมูล</button>
         </div>
 
         <div class="glass-card rounded-[2rem] shadow-sm p-6 border border-white">
-            <h3 class="font-bold text-slate-700 text-[10px] uppercase tracking-widest mb-6">Weight Trend</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-slate-700 text-sm uppercase tracking-widest text-[10px]">Weight Distance to Goal</h3>
+                <span class="text-[10px] text-slate-400 font-bold" id="goalLineText"></span>
+            </div>
             <div class="h-64"><canvas id="weightChart"></canvas></div>
         </div>
     </div>
@@ -84,93 +87,65 @@
         let username = localStorage.getItem('app_user');
         let weightGoal = localStorage.getItem('user_weight_goal');
         let firstWeight = null;
+        let chartData = { labels: [], weights: [] };
 
         window.onload = () => {
-            if (!username) {
-                document.getElementById('setupUser').classList.remove('hidden');
-            } else {
-                initApp();
-            }
+            if (!username) { document.getElementById('setupUser').classList.remove('hidden'); } 
+            else { initApp(); }
         };
 
-        // แก้ไข: เมื่อบันทึกชื่อแล้ว ให้เริ่มโหลดข้อมูลทันทีโดยไม่ต้อง Refresh
         function saveUsername() {
             const name = document.getElementById('usernameInput').value.trim();
-            if (name) {
-                username = name; // อัปเดตตัวแปรใน Memory ทันที
-                localStorage.setItem('app_user', name);
-                document.getElementById('setupUser').classList.add('hidden');
-                initApp(); // เรียกฟังก์ชันเริ่มต้นแอปทันที
-            }
+            if (name) { localStorage.setItem('app_user', name); document.getElementById('setupUser').classList.add('hidden'); initApp(); }
         }
 
-        function resetUser() {
-            if(confirm('ต้องการเปลี่ยนชื่อผู้ใช้?')) {
-                localStorage.clear();
-                location.reload(); // ตัวนี้ต้อง Reload เพื่อเคลียร์สถานะทั้งหมด
-            }
-        }
+        function resetUser() { if(confirm('เปลี่ยนชื่อผู้ใช้? ข้อมูลในเครื่องจะหายแต่ใน Sheet ยังอยู่')) { localStorage.removeItem('app_user'); location.reload(); } }
 
         function initApp() {
             document.getElementById('displayUser').innerText = `User: ${username}`;
             document.getElementById('heightInput').value = localStorage.getItem('user_height') || 156;
-            // ดึงเป้าหมายจากเครื่องก่อน ถ้ามี
             if (weightGoal) document.getElementById('targetWeightText').innerText = weightGoal;
-            loadData(); // ดึงข้อมูลจาก Google Sheets ทันที
+            loadData();
         }
 
         function setGoal() {
             const goal = prompt("เป้าหมายน้ำหนักที่ต้องการ (kg):", weightGoal || "");
-            if (goal && !isNaN(goal)) {
-                weightGoal = goal;
-                localStorage.setItem('user_weight_goal', goal);
-                document.getElementById('targetWeightText').innerText = goal;
-                // คำนวณเปอร์เซ็นต์ใหม่ทันทีไม่ต้องรอ
-                if (firstWeight) updateUI(parseFloat(document.getElementById('currentWeightText').innerText), parseFloat(document.getElementById('heightInput').value));
+            if (goal && !isNaN(goal)) { 
+                weightGoal = parseFloat(goal); 
+                localStorage.setItem('user_weight_goal', weightGoal); 
+                location.reload(); 
             }
         }
 
         async function saveData() {
-            const h = document.getElementById('heightInput').value;
-            const w = document.getElementById('weight').value;
+            const h = parseFloat(document.getElementById('heightInput').value);
+            const w = parseFloat(document.getElementById('weight').value);
             const btn = document.getElementById('btnSubmit');
 
             if (!h || !w) return alert('กรุณากรอกข้อมูลให้ครบ');
             localStorage.setItem('user_height', h);
             
-            const currentW = parseFloat(w);
-            const currentH = parseFloat(h);
+            btn.disabled = true; btn.innerHTML = '<span class="animate-pulse">Success! Syncing...</span>';
 
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-pulse">กำลังซิงค์...</span>';
-
-            // Optimistic Update: อัปเดตกราฟและตัวเลขบนหน้าจอทันที (ไม่ต้องรอ Server)
-            updateUI(currentW, currentH);
-            if (window.myChart) {
-                const today = new Date().toLocaleDateString('th-TH', {day:'numeric', month:'short'});
-                window.myChart.data.labels.push(today);
-                window.myChart.data.datasets[0].data.push(currentW);
-                window.myChart.update();
-            }
+            // Optimistic Update: อัปเดตทันที
+            updateUI(w, h);
+            const today = new Date().toLocaleDateString('th-TH', {day:'numeric', month:'short'});
+            chartData.labels.push(today);
+            chartData.weights.push(w);
+            renderChart(chartData.labels, chartData.weights);
 
             try {
-                await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ 
-                        weight: currentW, 
-                        height: currentH, 
-                        username: username, 
-                        goal: weightGoal || 0 
-                    })
+                fetch(GAS_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    body: JSON.stringify({ weight: w, waist: 0, height: h, username: username })
                 });
                 document.getElementById('weight').value = '';
-                // หน่วงเวลาเล็กน้อยเพื่อให้ Google Sheets ประมวลผลเสร็จแล้วค่อยดึงข้อมูลจริงมา Re-check
-                setTimeout(loadData, 2000);
+                setTimeout(loadData, 3000); // ดึงข้อมูลจริงมา Re-check
             } catch (err) { console.error(err); }
             finally { 
-                btn.disabled = false; 
-                btn.innerText = 'บันทึกน้ำหนัก'; 
+                setTimeout(() => {
+                    btn.disabled = false; btn.innerText = 'บันทึกข้อมูล';
+                }, 1000);
             }
         }
 
@@ -178,42 +153,17 @@
             try {
                 const res = await fetch(`${GAS_URL}?user=${encodeURIComponent(username)}`);
                 const data = await res.json();
-                
-                // ถ้าสลับ User แล้วไม่มีข้อมูล ให้เคลียร์หน้าจอรอ
-                if (!data || data.length === 0) {
-                    resetUIDisplay();
-                    return;
-                }
-
-                const lastRow = data[data.length - 1];
-                
-                // อัปเดตเป้าหมายจากฐานข้อมูล (Sync ระหว่างเครื่อง)
-                if (lastRow[5] && lastRow[5] != 0) {
-                    weightGoal = lastRow[5];
-                    localStorage.setItem('user_weight_goal', weightGoal);
-                    document.getElementById('targetWeightText').innerText = weightGoal;
-                }
+                if (!data || data.length === 0) return;
 
                 firstWeight = data[0][1];
-                updateUI(lastRow[1], lastRow[3] || 156);
+                const last = data[data.length - 1];
                 
-                const labels = data.map(r => new Date(r[0]).toLocaleDateString('th-TH', {day:'numeric', month:'short'}));
-                renderChart(labels, data.map(r => r[1]));
-            } catch (e) { console.error('Load error:', e); }
-        }
+                chartData.labels = data.map(r => new Date(r[0]).toLocaleDateString('th-TH', {day:'numeric', month:'short'}));
+                chartData.weights = data.map(r => r[1]);
 
-        // ฟังก์ชันล้างหน้าจอเมื่อข้อมูลเป็นว่าง (สำหรับตอนสลับ User)
-        function resetUIDisplay() {
-            document.getElementById('currentWeightText').innerText = '0';
-            document.getElementById('percentText').innerText = '0%';
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('analysisResult').classList.add('hidden');
-            document.getElementById('motivationalText').innerText = 'ยังไม่มีข้อมูลบันทึก';
-            if (window.myChart) {
-                window.myChart.data.labels = [];
-                window.myChart.data.datasets[0].data = [];
-                window.myChart.update();
-            }
+                updateUI(last[1], last[3] || document.getElementById('heightInput').value);
+                renderChart(chartData.labels, chartData.weights);
+            } catch (e) { console.error(e); }
         }
 
         function updateUI(w, h) {
@@ -224,26 +174,31 @@
             
             let status = "ปกติ"; let color = "text-green-500";
             if(bmi < 18.5) { status = "ผอม"; color = "text-blue-500"; }
-            else if(bmi >= 23 && bmi < 25) { status = "ท้วม"; color = "text-yellow-500"; }
-            else if(bmi >= 25) { status = "อ้วน"; color = "text-red-500"; }
+            else if(bmi >= 25) { status = "เริ่มอ้วน"; color = "text-red-500"; }
             document.getElementById('bmiStatusText').innerText = status;
             document.getElementById('bmiStatusText').className = `text-[10px] font-bold ${color}`;
 
             if (weightGoal && firstWeight) {
                 const total = firstWeight - weightGoal;
                 const lost = firstWeight - w;
-                let prog = (total === 0) ? 0 : (lost / total) * 100;
-                prog = Math.min(Math.max(prog, 0), 100);
-                
+                let prog = Math.min(Math.max((lost / total) * 100, 0), 100);
                 document.getElementById('progressBar').style.width = prog + '%';
                 document.getElementById('percentText').innerText = Math.round(prog) + '%';
-                document.getElementById('motivationalText').innerText = w <= weightGoal ? "ถึงเป้าหมายแล้ว 🎉" : `ลดไปแล้ว ${Math.abs(lost).toFixed(1)} kg (อีก ${Math.abs(w - weightGoal).toFixed(1)} kg)`;
+                document.getElementById('motivationalText').innerText = w <= weightGoal ? "ถึงเป้าหมายแล้ว 🎉" : `ลดไปแล้ว ${lost.toFixed(1)} kg (อีก ${(w - weightGoal).toFixed(1)} kg)`;
             }
         }
 
         function renderChart(l, weights) {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if (window.myChart) window.myChart.destroy();
+
+            const goal = parseFloat(weightGoal);
+            // ล็อกขอบล่างของแกน Y ไว้ที่เป้าหมาย ส่วนขอบบนคือน้ำหนักที่มากที่สุด
+            const minY = goal ? Math.min(goal, ...weights) - 1 : Math.min(...weights) - 2;
+            const maxY = Math.max(...weights) + 1;
+
+            if(goal) document.getElementById('goalLineText').innerText = `GOAL: ${goal} kg`;
+
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -256,7 +211,15 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } },
+                    scales: { 
+                        y: { 
+                            min: goal ? goal : undefined, // ล็อกล่างสุดเป็นเป้าหมาย
+                            max: maxY,
+                            ticks: { font: { size: 10 }, color: '#94a3b8' },
+                            grid: { borderDash: [5, 5], color: 'rgba(0,0,0,0.05)' }
+                        }, 
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } } 
+                    },
                     plugins: { legend: { display: false } }
                 }
             });
