@@ -40,180 +40,123 @@
         <div class="glass-card rounded-3xl shadow-xl shadow-slate-200/50 p-6 mb-6 border border-white">
             <div class="mb-4">
                 <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Current Height (cm)</label>
-                <input type="number" id="heightInput" placeholder="กรอกส่วนสูงของคุณ" 
-                    class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none text-lg font-semibold transition-all border border-slate-100">
+                <input type="number" id="heightInput" placeholder="156" 
+                    class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none text-lg font-semibold border border-slate-100">
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Weight (kg)</label>
                     <input type="number" id="weight" step="0.1" placeholder="0.0" 
-                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition-all border border-slate-100">
+                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border border-slate-100">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Waist (inch)</label>
                     <input type="number" id="waist" step="0.1" placeholder="0.0" 
-                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-lg font-semibold transition-all border border-slate-100">
+                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-lg font-semibold border border-slate-100">
                 </div>
             </div>
-            <button onclick="saveData()" id="btnSubmit" 
-                class="w-full bg-slate-900 hover:bg-black text-white p-4 rounded-2xl font-bold transition-all active:scale-95 shadow-lg">
-                บันทึกและวิเคราะห์หุ่น
-            </button>
+            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกและวิเคราะห์หุ่น</button>
         </div>
 
         <div class="glass-card rounded-3xl shadow-sm p-5 border border-white">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="font-bold text-slate-700 text-sm">Trend Line</h3>
                 <div class="flex gap-2 text-[10px] font-bold uppercase">
-                    <span class="flex items-center text-blue-500">● Weight</span>
-                    <span class="flex items-center text-pink-500">● Waist</span>
+                    <span class="text-blue-500">● Weight</span>
+                    <span class="text-pink-500">● Waist</span>
                 </div>
             </div>
-            <div class="h-64">
-                <canvas id="weightChart"></canvas>
-            </div>
+            <div class="h-64"><canvas id="weightChart"></canvas></div>
         </div>
         
-        <div id="goalSection" class="mt-4 p-5 rounded-2xl text-white hidden shadow-lg transition-all">
-            <p class="text-[10px] opacity-80 uppercase font-bold tracking-widest mb-1">Target Waist: 25 inch</p>
+        <div id="goalSection" class="mt-4 p-5 rounded-2xl text-white hidden shadow-lg">
+            <p class="text-[10px] opacity-80 uppercase font-bold tracking-widest mb-1">Target: 25 inch</p>
             <p id="goalText" class="text-lg font-bold leading-tight"></p>
         </div>
     </div>
 
     <script>
-        // *** CONFIGURATION ***
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzPe1cKIvCjhwE3yKxj817Ykgkj9D5ipctEsXI4bjPyWiaq9EqnWWLAFUL9Yc8zXF_gtw/exec';
-        const TARGET_WAIST = 25;
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyy1GtJTiKYKAxR7EAxVqfuk445Xwh-IPnwjnbDEx0MOsldwHDolNTPOZIrwXjQ_ffa4A/exec';
 
-        // 1. เริ่มต้นเมื่อโหลดหน้าเว็บ
         window.onload = () => {
-            // ดึงส่วนสูงที่เคยจำไว้ในเครื่อง
             const savedHeight = localStorage.getItem('user_height');
             if (savedHeight) document.getElementById('heightInput').value = savedHeight;
-            // โหลดข้อมูลล่าสุดจาก Sheets
             loadData();
         };
 
-        // 2. ฟังก์ชันส่งข้อมูลไปบันทึก (POST)
         async function saveData() {
-            const hInput = document.getElementById('heightInput');
-            const wInput = document.getElementById('weight');
-            const waInput = document.getElementById('waist');
+            const h = document.getElementById('heightInput').value;
+            const w = document.getElementById('weight').value;
+            const wa = document.getElementById('waist').value;
             const btn = document.getElementById('btnSubmit');
 
-            if (!wInput.value || !waInput.value || !hInput.value) return alert('กรุณากรอกข้อมูลให้ครบครับ');
-
-            // จำส่วนสูงไว้ใน LocalStorage
-            localStorage.setItem('user_height', hInput.value);
-            
-            btn.disabled = true;
-            btn.innerText = 'กำลังบันทึก...';
+            if (!h || !w || !wa) return alert('กรุณากรอกข้อมูลให้ครบครับ');
+            localStorage.setItem('user_height', h);
+            btn.disabled = true; btn.innerText = 'Saving...';
 
             try {
                 await fetch(GAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify({ 
-                        weight: parseFloat(wInput.value), 
-                        waist: parseFloat(waInput.value), 
-                        height: parseFloat(hInput.value) 
-                    })
+                    body: JSON.stringify({ weight: parseFloat(w), waist: parseFloat(wa), height: parseFloat(h) })
                 });
-                
                 alert('บันทึกสำเร็จ!');
-                wInput.value = '';
-                waInput.value = '';
-                loadData(); // รีเฟรชข้อมูลในแอป
-            } catch (err) {
-                alert('Error: ' + err);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'บันทึกและวิเคราะห์หุ่น';
-            }
+                document.getElementById('weight').value = '';
+                document.getElementById('waist').value = '';
+                setTimeout(loadData, 1000); // รอ 1 วิเพื่อให้ GAS บันทึกเสร็จก่อนดึงใหม่
+            } catch (err) { alert('Save Error'); }
+            finally { btn.disabled = false; btn.innerText = 'บันทึกและวิเคราะห์หุ่น'; }
         }
 
-        // 3. ฟังก์ชันดึงข้อมูลมาแสดงผล (GET)
         async function loadData() {
             try {
-                const response = await fetch(GAS_URL);
-                const data = await response.json();
+                const res = await fetch(GAS_URL);
+                const data = await res.json();
                 if (!data || data.length === 0) return;
 
-                const lastEntry = data[data.length - 1];
+                const last = data[data.length - 1];
                 const h = document.getElementById('heightInput').value || 156;
-                
-                // วิเคราะห์หุ่น (BMI & WtHR)
-                updateAnalysis(lastEntry[1], lastEntry[2], h);
+                updateAnalysis(last[1], last[2], h);
 
-                // เตรียมข้อมูลวาดกราฟ
-                const labels = data.map(row => {
-                    const d = new Date(row[0]);
-                    return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-                });
-                const weights = data.map(row => row[1]);
-                const waists = data.map(row => row[2]);
-
-                renderChart(labels, weights, waists);
-            } catch (err) { console.error('Fetch Error:', err); }
+                const labels = data.map(r => new Date(r[0]).toLocaleDateString('th-TH', {day:'numeric', month:'short'}));
+                renderChart(labels, data.map(r => r[1]), data.map(r => r[2]));
+            } catch (err) { console.error('Load Error'); }
         }
 
-        // 4. Logic การวิเคราะห์ร่างกาย
-        function updateAnalysis(weight, waist, height) {
+        function updateAnalysis(w, wa, h) {
             document.getElementById('analysisResult').classList.remove('hidden');
-            
-            // คำนวณ BMI
-            const bmi = (weight / ((height/100)**2)).toFixed(1);
-            const bmiEl = document.getElementById('bmiValue');
-            const bmiStatusEl = document.getElementById('bmiStatus');
-            bmiEl.innerText = bmi;
-            if(bmi < 18.5) { bmiStatusEl.innerText = 'น้ำหนักน้อย'; bmiStatusEl.className = 'text-[10px] text-blue-500 font-bold'; }
-            else if(bmi < 23) { bmiStatusEl.innerText = 'น้ำหนักปกติ'; bmiStatusEl.className = 'text-[10px] text-green-500 font-bold'; }
-            else if(bmi < 25) { bmiStatusEl.innerText = 'เริ่มท้วม'; bmiStatusEl.className = 'text-[10px] text-orange-500 font-bold'; }
-            else { bmiStatusEl.innerText = 'เริ่มอ้วน'; bmiStatusEl.className = 'text-[10px] text-red-500 font-bold'; }
-
-            // คำนวณ Waist-to-Height Ratio (WtHR)
-            const wthr = ((waist * 2.54) / height).toFixed(2);
+            const bmi = (w / ((h/100)**2)).toFixed(1);
+            document.getElementById('bmiValue').innerText = bmi;
+            const wthr = ((wa * 2.54) / h).toFixed(2);
             document.getElementById('wthrValue').innerText = wthr;
-            const wthrStatusEl = document.getElementById('wthrStatus');
-            if(wthr <= 0.5) { wthrStatusEl.innerText = 'สัดส่วนดี'; wthrStatusEl.className = 'text-[10px] text-green-500 font-bold'; }
-            else { wthrStatusEl.innerText = 'เริ่มมีพุง'; wthrStatusEl.className = 'text-[10px] text-red-500 font-bold'; }
-
-            // ส่วน Goal Motivation
+            
             const goalSection = document.getElementById('goalSection');
             goalSection.classList.remove('hidden');
-            if (waist > TARGET_WAIST) {
-                const diff = (waist - TARGET_WAIST).toFixed(1);
-                document.getElementById('goalText').innerText = `อีก ${diff} นิ้ว จะถึงเป้าหมาย 25"! สู้ๆ ครับ`;
+            if (wa > 25) {
+                document.getElementById('goalText').innerText = `อีก ${(wa - 25).toFixed(1)} นิ้ว จะถึงเป้าหมาย!`;
                 goalSection.className = 'mt-4 p-5 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl text-white shadow-lg';
             } else {
-                document.getElementById('goalText').innerText = `ถึงเป้าหมาย 25 นิ้วแล้ว! ยินดีด้วยครับ 🎉`;
+                document.getElementById('goalText').innerText = `ถึงเป้าหมาย 25 นิ้วแล้ว 🎉`;
                 goalSection.className = 'mt-4 p-5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl text-white shadow-lg';
             }
         }
 
-        // 5. วาดกราฟด้วย Chart.js
-        function renderChart(labels, weights, waists) {
+        function renderChart(l, weights, waists) {
             const ctx = document.getElementById('weightChart').getContext('2d');
             if (window.myChart) window.myChart.destroy();
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: l,
                     datasets: [
-                        { label: 'Weight', data: weights, borderColor: '#3b82f6', borderWidth: 3, pointRadius: 4, tension: 0.4, yAxisID: 'y' },
-                        { label: 'Waist', data: waists, borderColor: '#ec4899', borderWidth: 2, borderDash: [5, 5], pointRadius: 4, tension: 0.4, yAxisID: 'y1' }
+                        { label: 'W', data: weights, borderColor: '#3b82f6', borderWidth: 3, tension: 0.4, yAxisID: 'y' },
+                        { label: 'Wa', data: waists, borderColor: '#ec4899', borderWidth: 2, borderDash: [5,5], tension: 0.4, yAxisID: 'y1' }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    scales: {
-                        y: { type: 'linear', display: false },
-                        y1: { type: 'linear', display: false },
-                        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }
-                    },
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { display: false }, y1: { display: false }, x: { grid: { display: false } } },
                     plugins: { legend: { display: false } }
                 }
             });
