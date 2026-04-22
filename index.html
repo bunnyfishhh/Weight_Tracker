@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jinpao Weight Tracker</title>
+    <title>Jinpao Fitness Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -11,79 +11,89 @@
         body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .progress-gradient { background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%); }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen pb-10">
+<body class="bg-slate-100 min-h-screen pb-10 text-slate-800">
 
     <div class="max-w-md mx-auto p-4">
         <header class="flex justify-between items-center mb-6 pt-4 px-2">
-            <h1 class="text-2xl font-bold text-slate-800">📊 Progress</h1>
-            <div class="text-right">
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Database</p>
-                <p class="text-xs font-semibold text-blue-600">Google Sheets API</p>
-            </div>
+            <h1 class="text-2xl font-bold">📊 My Progress</h1>
+            <button onclick="setGoal()" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 uppercase tracking-tight">ตั้งเป้าหมาย</button>
         </header>
+
+        <div id="goalDisplay" class="glass-card p-5 rounded-3xl border border-white shadow-sm mb-4">
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Weight Goal</p>
+                    <p class="text-2xl font-black text-slate-900"><span id="currentWeightText">0</span> <span class="text-sm font-normal text-slate-400">/ <span id="targetWeightText">--</span> kg</span></p>
+                </div>
+                <div class="text-right">
+                    <p id="percentText" class="text-xl font-bold text-emerald-500">0%</p>
+                </div>
+            </div>
+            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                <div id="progressBar" class="progress-gradient h-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <p id="motivationalText" class="text-[11px] text-slate-500 mt-3 font-medium text-center">เริ่มบันทึกข้อมูลเพื่อดูความคืบหน้ากันครับ!</p>
+        </div>
 
         <div id="analysisResult" class="hidden grid grid-cols-2 gap-3 mb-4">
             <div class="glass-card p-4 rounded-2xl border border-white shadow-sm text-center">
-                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">BMI Status</p>
-                <p id="bmiValue" class="text-xl font-bold text-slate-800">-</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">BMI</p>
+                <p id="bmiValue" class="text-xl font-bold">-</p>
                 <p id="bmiStatus" class="text-[10px] font-medium">-</p>
             </div>
             <div class="glass-card p-4 rounded-2xl border border-white shadow-sm text-center">
-                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Body Ratio (WtHR)</p>
-                <p id="wthrValue" class="text-xl font-bold text-slate-800">-</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">เอว (นิ้ว)</p>
+                <p id="waistValue" class="text-xl font-bold">-</p>
                 <p id="wthrStatus" class="text-[10px] font-medium">-</p>
             </div>
         </div>
 
         <div class="glass-card rounded-3xl shadow-xl shadow-slate-200/50 p-6 mb-6 border border-white">
-            <div class="mb-4">
-                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Current Height (cm)</label>
-                <input type="number" id="heightInput" placeholder="156" 
-                    class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-green-500 outline-none text-lg font-semibold border border-slate-100">
-            </div>
-
             <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Weight (kg)</label>
-                    <input type="number" id="weight" step="0.1" placeholder="0.0" 
-                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border border-slate-100">
+                <div class="col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">ส่วนสูง (cm)</label>
+                    <input type="number" id="heightInput" placeholder="156" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border border-slate-100">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">Waist (inch)</label>
-                    <input type="number" id="waist" step="0.1" placeholder="0.0" 
-                        class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-lg font-semibold border border-slate-100">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">น้ำหนัก (kg)</label>
+                    <input type="number" id="weight" step="0.1" placeholder="0.0" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold border border-slate-100">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1 ml-1">เอว (นิ้ว)</label>
+                    <input type="number" id="waist" step="0.1" placeholder="0.0" class="w-full p-4 bg-slate-50 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none text-lg font-semibold border border-slate-100">
                 </div>
             </div>
-            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกและวิเคราะห์หุ่น</button>
+            <button onclick="saveData()" id="btnSubmit" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">บันทึกข้อมูลวันนี้</button>
         </div>
 
         <div class="glass-card rounded-3xl shadow-sm p-5 border border-white">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-slate-700 text-sm">Trend Line</h3>
-                <div class="flex gap-2 text-[10px] font-bold uppercase">
-                    <span class="text-blue-500">● Weight</span>
-                    <span class="text-pink-500">● Waist</span>
-                </div>
-            </div>
+            <h3 class="font-bold text-slate-700 text-sm mb-6">น้ำหนัก & รอบเอว</h3>
             <div class="h-64"><canvas id="weightChart"></canvas></div>
-        </div>
-        
-        <div id="goalSection" class="mt-4 p-5 rounded-2xl text-white hidden shadow-lg">
-            <p class="text-[10px] opacity-80 uppercase font-bold tracking-widest mb-1">Target: 25 inch</p>
-            <p id="goalText" class="text-lg font-bold leading-tight"></p>
         </div>
     </div>
 
     <script>
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbyy1GtJTiKYKAxR7EAxVqfuk445Xwh-IPnwjnbDEx0MOsldwHDolNTPOZIrwXjQ_ffa4A/exec';
+        let weightGoal = localStorage.getItem('user_weight_goal') || null;
 
         window.onload = () => {
-            const savedHeight = localStorage.getItem('user_height');
-            if (savedHeight) document.getElementById('heightInput').value = savedHeight;
+            document.getElementById('heightInput').value = localStorage.getItem('user_height') || 156;
+            if (weightGoal) document.getElementById('targetWeightText').innerText = weightGoal;
             loadData();
         };
+
+        function setGoal() {
+            const goal = prompt("ตั้งเป้าหมายน้ำหนักที่คุณต้องการ (kg):", weightGoal || "");
+            if (goal && !isNaN(goal)) {
+                weightGoal = goal;
+                localStorage.setItem('user_weight_goal', goal);
+                document.getElementById('targetWeightText').innerText = goal;
+                loadData(); // รีโหลดเพื่ออัปเดตเปอร์เซ็นต์
+            }
+        }
 
         async function saveData() {
             const h = document.getElementById('heightInput').value;
@@ -93,20 +103,19 @@
 
             if (!h || !w || !wa) return alert('กรุณากรอกข้อมูลให้ครบครับ');
             localStorage.setItem('user_height', h);
-            btn.disabled = true; btn.innerText = 'Saving...';
-
+            
+            btn.disabled = true; btn.innerText = 'กำลังบันทึก...';
             try {
                 await fetch(GAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({ weight: parseFloat(w), waist: parseFloat(wa), height: parseFloat(h) })
                 });
-                alert('บันทึกสำเร็จ!');
                 document.getElementById('weight').value = '';
                 document.getElementById('waist').value = '';
-                setTimeout(loadData, 1000); // รอ 1 วิเพื่อให้ GAS บันทึกเสร็จก่อนดึงใหม่
+                setTimeout(loadData, 1500);
             } catch (err) { alert('Save Error'); }
-            finally { btn.disabled = false; btn.innerText = 'บันทึกและวิเคราะห์หุ่น'; }
+            finally { btn.disabled = false; btn.innerText = 'บันทึกข้อมูลวันนี้'; }
         }
 
         async function loadData() {
@@ -116,30 +125,41 @@
                 if (!data || data.length === 0) return;
 
                 const last = data[data.length - 1];
-                const h = document.getElementById('heightInput').value || 156;
-                updateAnalysis(last[1], last[2], h);
+                const currentWeight = last[1];
+                const currentWaist = last[2];
+                const height = document.getElementById('heightInput').value || 156;
+
+                // อัปเดต UI เป้าหมาย
+                document.getElementById('currentWeightText').innerText = currentWeight;
+                if (weightGoal) {
+                    const diff = Math.abs(currentWeight - weightGoal).toFixed(1);
+                    // คำนวณเปอร์เซ็นต์แบบคร่าวๆ (อิงจากความพยายามลด/เพิ่ม)
+                    // ในที่นี้สมมติว่าเป็นความใกล้เคียงเป้าหมาย
+                    let progress = 0;
+                    if (currentWeight > weightGoal) {
+                         progress = Math.max(0, 100 - ((currentWeight - weightGoal) / weightGoal * 100));
+                    } else {
+                         progress = Math.max(0, 100 - ((weightGoal - currentWeight) / weightGoal * 100));
+                    }
+                    
+                    document.getElementById('progressBar').style.width = progress.toFixed(0) + '%';
+                    document.getElementById('percentText').innerText = progress.toFixed(0) + '%';
+                    
+                    if (currentWeight == weightGoal) {
+                        document.getElementById('motivationalText').innerText = "ยินดีด้วย! คุณถึงเป้าหมายแล้ว 🎉";
+                    } else {
+                        document.getElementById('motivationalText').innerText = `อีก ${diff} kg จะถึงเป้าหมาย! สู้ๆ นะครับ`;
+                    }
+                }
+
+                // อัปเดตตารางวิเคราะห์
+                document.getElementById('analysisResult').classList.remove('hidden');
+                document.getElementById('bmiValue').innerText = (currentWeight / ((height/100)**2)).toFixed(1);
+                document.getElementById('waistValue').innerText = currentWaist;
 
                 const labels = data.map(r => new Date(r[0]).toLocaleDateString('th-TH', {day:'numeric', month:'short'}));
                 renderChart(labels, data.map(r => r[1]), data.map(r => r[2]));
             } catch (err) { console.error('Load Error'); }
-        }
-
-        function updateAnalysis(w, wa, h) {
-            document.getElementById('analysisResult').classList.remove('hidden');
-            const bmi = (w / ((h/100)**2)).toFixed(1);
-            document.getElementById('bmiValue').innerText = bmi;
-            const wthr = ((wa * 2.54) / h).toFixed(2);
-            document.getElementById('wthrValue').innerText = wthr;
-            
-            const goalSection = document.getElementById('goalSection');
-            goalSection.classList.remove('hidden');
-            if (wa > 25) {
-                document.getElementById('goalText').innerText = `อีก ${(wa - 25).toFixed(1)} นิ้ว จะถึงเป้าหมาย!`;
-                goalSection.className = 'mt-4 p-5 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl text-white shadow-lg';
-            } else {
-                document.getElementById('goalText').innerText = `ถึงเป้าหมาย 25 นิ้วแล้ว 🎉`;
-                goalSection.className = 'mt-4 p-5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl text-white shadow-lg';
-            }
         }
 
         function renderChart(l, weights, waists) {
@@ -150,13 +170,13 @@
                 data: {
                     labels: l,
                     datasets: [
-                        { label: 'W', data: weights, borderColor: '#3b82f6', borderWidth: 3, tension: 0.4, yAxisID: 'y' },
-                        { label: 'Wa', data: waists, borderColor: '#ec4899', borderWidth: 2, borderDash: [5,5], tension: 0.4, yAxisID: 'y1' }
+                        { label: 'Weight', data: weights, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, borderWidth: 3, tension: 0.4, yAxisID: 'y' },
+                        { label: 'Waist', data: waists, borderColor: '#ec4899', borderWidth: 2, borderDash: [5,5], tension: 0.4, yAxisID: 'y1' }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { y: { display: false }, y1: { display: false }, x: { grid: { display: false } } },
+                    scales: { y: { display: false }, y1: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } },
                     plugins: { legend: { display: false } }
                 }
             });
